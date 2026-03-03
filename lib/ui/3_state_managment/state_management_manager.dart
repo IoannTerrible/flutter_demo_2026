@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_demo/services/local_storage/local_storage.dart';
+import 'package:flutter_demo/services/service_locator.dart';
 
 class StateManagementManager {
   final colorNotifier = ValueNotifier<Color>(Colors.black);
   final numberNotifier = ValueNotifier<int>(1);
+  final localStorage = getIt<LocalStorage>();
 
   int _colorIndex = 0;
   final _colors = [
@@ -13,6 +16,13 @@ class StateManagementManager {
     Colors.deepPurple,
     Colors.red,
   ];
+
+  void init() {
+    final color = localStorage.getColor();
+    final number = localStorage.getNumber();
+    colorNotifier.value = color;
+    numberNotifier.value = number;
+  }
 
   void changeColor() {
     _colorIndex++;

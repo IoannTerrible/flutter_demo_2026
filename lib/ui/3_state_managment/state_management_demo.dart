@@ -12,6 +12,12 @@ class _StateManagementDemoState extends State<StateManagementDemo> {
   final manager = StateManagementManager();
 
   @override
+  void initState() {
+    super.initState();
+    manager.init();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('State Management')),
