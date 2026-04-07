@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_demo/app_state.dart';
-import 'package:flutter_demo/services/auth/auth.dart';
 import 'package:flutter_demo/services/local_storage/local_storage.dart';
 import 'package:flutter_demo/services/service_locator.dart';
 import 'package:flutter_demo/theme.dart';
@@ -14,7 +13,8 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setupServiceLocator();
   await getIt<LocalStorage>().init();
-  await getIt<Auth>().init();
+  // TODO: fix firebase
+  // await getIt<Auth>().init();
   await getIt<AppState>().init();
   runApp(const MyApp());
 }
