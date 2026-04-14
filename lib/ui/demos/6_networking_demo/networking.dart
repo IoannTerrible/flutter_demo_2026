@@ -36,7 +36,8 @@ class _NetworkingDemoWidgetState extends State<NetworkingDemoWidget> {
           children: [
             ElevatedButton(
               onPressed: () async {
-                result.value = await api.get(1);
+                var res = await api.get(1);
+                result.value = (res).toString();
               },
               child: Text('GET'),
             ),
