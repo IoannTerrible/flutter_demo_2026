@@ -85,7 +85,7 @@ class _ProfilingDemoState extends State<ProfilingDemo> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Visual indicator to show when the UI thread is frozen
-            const Center(child: CircularProgressIndicator()),
+            //const Center(child: CircularProgressIndicator()),
             const SizedBox(height: 20),
 
             _buildSectionHeader('1. Flutter Inspector'),
