@@ -13,48 +13,93 @@ class PaintingDemo extends StatefulWidget {
 }
 
 class _PaintingDemoState extends State<PaintingDemo> {
+  double _cp1X = 80;
+  double _cp1Y = 30;
+  double _cp2X = 220;
+  double _cp2Y = 270;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(),
-      // body: Center(
-      //   child: Container(
-      //     // color: Colors.cyan,
-      //     child: ProgressBar(
-      //       barColor: Colors.blue,
-      //       thumbColor: Colors.red,
-      //       thumbSize: 20.0,
-      //     ),
-      //   ),
-      // ),
       body: Center(
-        child: Container(
-          decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
-          child: CustomPaint(size: Size(300, 300), painter: MyPainter()),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
+              child: CustomPaint(
+                size: const Size(300, 300),
+                painter: MyPainter(cp1X: _cp1X, cp1Y: _cp1Y, cp2X: _cp2X, cp2Y: _cp2Y),
+              ),
+            ),
+            const SizedBox(height: 16),
+            _SliderRow(label: 'CP1 X', value: _cp1X, onChanged: (v) => setState(() => _cp1X = v)),
+            _SliderRow(label: 'CP1 Y', value: _cp1Y, onChanged: (v) => setState(() => _cp1Y = v)),
+            _SliderRow(label: 'CP2 X', value: _cp2X, onChanged: (v) => setState(() => _cp2X = v)),
+            _SliderRow(label: 'CP2 Y', value: _cp2Y, onChanged: (v) => setState(() => _cp2Y = v)),
+          ],
         ),
       ),
     );
   }
 }
 
+class _SliderRow extends StatelessWidget {
+  const _SliderRow({required this.label, required this.value, required this.onChanged});
+  final String label;
+  final double value;
+  final ValueChanged<double> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        SizedBox(width: 80, child: Text('$label: ${value.toStringAsFixed(0)}', textAlign: TextAlign.end)),
+        Expanded(child: Slider(value: value, min: 0, max: 300, onChanged: onChanged)),
+      ],
+    );
+  }
+}
+
 class MyPainter extends CustomPainter {
+  const MyPainter({required this.cp1X, required this.cp1Y, required this.cp2X, required this.cp2Y});
+  final double cp1X, cp1Y, cp2X, cp2Y;
+
+  static const _startX = 30.0;
+  static const _startY = 150.0;
+  static const _endX = 270.0;
+  static const _endY = 150.0;
+
   @override
   void paint(Canvas canvas, Size size) {
-    final path = Path()
-      ..moveTo(50, 50)
-      ..quadraticBezierTo(30, 150, 150, 100)
-      ..quadraticBezierTo(270, 50, 240, 150);
-    final paint = Paint()
+    final curvePaint = Paint()
       ..color = Colors.black
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4;
-    canvas.drawPath(path, paint);
+
+    final path = Path()
+      ..moveTo(_startX, _startY)
+      ..cubicTo(cp1X, cp1Y, cp2X, cp2Y, _endX, _endY);
+    canvas.drawPath(path, curvePaint);
+
+    // draw control point handles
+    final handlePaint = Paint()
+      ..color = Colors.blue.withOpacity(0.5)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+    canvas.drawLine(Offset(_startX, _startY), Offset(cp1X, cp1Y), handlePaint);
+    canvas.drawLine(Offset(_endX, _endY), Offset(cp2X, cp2Y), handlePaint);
+
+    final dotPaint = Paint()..color = Colors.blue;
+    canvas.drawCircle(Offset(cp1X, cp1Y), 5, dotPaint);
+    canvas.drawCircle(Offset(cp2X, cp2Y), 5, dotPaint);
   }
 
   @override
-  bool shouldRepaint(CustomPainter old) {
-    return false;
+  bool shouldRepaint(MyPainter old) {
+    return old.cp1X != cp1X || old.cp1Y != cp1Y || old.cp2X != cp2X || old.cp2Y != cp2Y;
   }
 }
 
