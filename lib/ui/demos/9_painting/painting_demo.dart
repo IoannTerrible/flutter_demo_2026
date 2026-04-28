@@ -43,11 +43,8 @@ class MyPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final path = Path()
       ..moveTo(50, 50)
-      ..lineTo(200, 200)
       ..quadraticBezierTo(30, 150, 150, 100)
-      ..moveTo(-50, -50)
-      ..lineTo(200, 200)
-      ..quadraticBezierTo(30, 20, 150, 100);;
+      ..quadraticBezierTo(270, 50, 240, 150);
     final paint = Paint()
       ..color = Colors.black
       ..style = PaintingStyle.stroke
@@ -186,20 +183,7 @@ class RenderProgressBar extends RenderBox {
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
 
-    // paint bar
-    final barPaint = Paint()
-      ..color = barColor
-      ..strokeWidth = 5;
-    final point1 = Offset(0, size.height / 2);
-    final point2 = Offset(size.width, size.height / 2);
-    canvas.drawLine(point1, point2, barPaint);
-
-    // paint thumb
-    final thumbPaint = Paint()..color = thumbColor;
-    final thumbDx = _currentThumbValue * size.width;
-    final center = Offset(thumbDx, size.height / 2);
-    canvas.drawCircle(center, thumbSize / 2, thumbPaint);
-    canvas.restore();
+    
   }
 
   late HorizontalDragGestureRecognizer _drag;
