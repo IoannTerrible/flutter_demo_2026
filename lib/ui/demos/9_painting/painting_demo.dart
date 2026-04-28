@@ -44,7 +44,10 @@ class MyPainter extends CustomPainter {
     final path = Path()
       ..moveTo(50, 50)
       ..lineTo(200, 200)
-      ..quadraticBezierTo(200, 20, 150, 100);
+      ..quadraticBezierTo(30, 150, 150, 100)
+      ..moveTo(-50, -50)
+      ..lineTo(200, 200)
+      ..quadraticBezierTo(30, 20, 150, 100);;
     final paint = Paint()
       ..color = Colors.black
       ..style = PaintingStyle.stroke
