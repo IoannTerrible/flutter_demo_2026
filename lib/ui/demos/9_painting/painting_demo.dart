@@ -185,20 +185,7 @@ class RenderProgressBar extends RenderBox {
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
 
-    // paint bar
-    final barPaint = Paint()
-      ..color = barColor
-      ..strokeWidth = 5;
-    final point1 = Offset(0, size.height / 2);
-    final point2 = Offset(size.width, size.height / 2);
-    canvas.drawLine(point1, point2, barPaint);
-
-    // paint thumb
-    final thumbPaint = Paint()..color = thumbColor;
-    final thumbDx = _currentThumbValue * size.width;
-    final center = Offset(thumbDx, size.height / 2);
-    canvas.drawCircle(center, thumbSize / 2, thumbPaint);
-    canvas.restore();
+    
   }
 
   late HorizontalDragGestureRecognizer _drag;
