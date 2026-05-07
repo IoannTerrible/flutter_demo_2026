@@ -1,22 +1,13 @@
 import 'package:flutter/material.dart';
 
-class AnimationsDemo extends StatelessWidget {
+class AnimationsDemo extends StatefulWidget {
   const AnimationsDemo({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(), body: LogoWidget());
-  }
+  State<AnimationsDemo> createState() => _AnimationsDemoState();
 }
 
-class TickerWidget extends StatefulWidget {
-  const TickerWidget({super.key});
-
-  @override
-  State<TickerWidget> createState() => _TickerWidgetState();
-}
-
-class _TickerWidgetState extends State<TickerWidget>
+class _AnimationsDemoState extends State<AnimationsDemo>
     with SingleTickerProviderStateMixin {
   late Animation<double> animation;
   late AnimationController controller;
@@ -28,19 +19,8 @@ class _TickerWidgetState extends State<TickerWidget>
       duration: const Duration(seconds: 2),
       vsync: this,
     );
-    animation = Tween<double>(begin: 0, end: 300).animate(controller);
-    animation.addListener(() {
-      setState(() {
-        // The state that has changed here is the animation object's value.
-      });
-    });
-    animation.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        controller.reverse();
-      } else if (status == AnimationStatus.dismissed) {
-        controller.forward();
-      }
-    });
+    animation = Tween<double>(begin: 0, end: 300).animate(controller)
+      ..addStatusListener((status) => print('$status'));
     controller.forward();
   }
 
@@ -52,11 +32,9 @@ class _TickerWidgetState extends State<TickerWidget>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      height: animation.value,
-      width: animation.value,
-      child: const FlutterLogo(),
+    return Scaffold(
+      appBar: AppBar(),
+      body: GrowTransition(animation: animation, child: const LogoWidget()),
     );
   }
 }
@@ -70,6 +48,34 @@ class LogoWidget extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
       child: const FlutterLogo(),
+    );
+  }
+}
+
+class GrowTransition extends StatelessWidget {
+  const GrowTransition({
+    required this.child,
+    required this.animation,
+    super.key,
+  });
+
+  final Widget child;
+  final Animation<double> animation;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: AnimatedBuilder(
+        animation: animation,
+        builder: (context, child) {
+          return SizedBox(
+            height: animation.value,
+            width: animation.value,
+            child: child,
+          );
+        },
+        child: child,
+      ),
     );
   }
 }
