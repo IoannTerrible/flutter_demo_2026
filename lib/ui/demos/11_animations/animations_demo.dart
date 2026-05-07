@@ -7,74 +7,83 @@ class AnimationsDemo extends StatefulWidget {
   State<AnimationsDemo> createState() => _AnimationsDemoState();
 }
 
-class _AnimationsDemoState extends State<AnimationsDemo>
-    with SingleTickerProviderStateMixin {
-  late Animation<double> animation;
-  late AnimationController controller;
+class _AnimationsDemoState extends State<AnimationsDemo> {
+  // 1. Define variables for the changing states
+  double _size = 300.0;
+  Curve _currentCurve = Curves.easeInOut;
 
-  @override
-  void initState() {
-    super.initState();
-    controller = AnimationController(
-      duration: const Duration(seconds: 2),
-      vsync: this,
-    );
-    animation = Tween<double>(begin: 0, end: 300).animate(controller)
-      ..addStatusListener((status) => print('$status'));
-    controller.forward();
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
+  // A map of different curves to test out
+  final Map<String, Curve> _curves = {
+    'Ease In Out': Curves.easeInOut,
+    'Bounce Out': Curves.bounceOut,
+    'Elastic Out': Curves.elasticOut,
+    'Linear': Curves.linear,
+    'Decelerate': Curves.decelerate,
+  };
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: GrowTransition(animation: animation, child: const LogoWidget()),
-    );
-  }
-}
+      appBar: AppBar(title: const Text('Curves Demo')),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // 2. A Dropdown to switch between different Curves
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('Select Curve: ', style: TextStyle(fontSize: 18)),
+              DropdownButton<Curve>(
+                value: _currentCurve,
+                items: _curves.entries.map((entry) {
+                  return DropdownMenuItem<Curve>(
+                    value: entry.value,
+                    child: Text(entry.key),
+                  );
+                }).toList(),
+                onChanged: (Curve? newCurve) {
+                  if (newCurve != null) {
+                    setState(() {
+                      _currentCurve = newCurve;
+                    });
+                  }
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
 
-class LogoWidget extends StatelessWidget {
-  const LogoWidget({super.key});
+          // 3. A button to trigger the size change
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                // Toggle the size between 100 and 300
+                _size = _size == 300.0 ? 100.0 : 300.0;
+              });
+            },
+            child: const Text('Animate Size'),
+          ),
+          const SizedBox(height: 40),
 
-  // Leave out the height and width so it fills the animating parent.
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      child: const FlutterLogo(),
-    );
-  }
-}
-
-class GrowTransition extends StatelessWidget {
-  const GrowTransition({
-    required this.child,
-    required this.animation,
-    super.key,
-  });
-
-  final Widget child;
-  final Animation<double> animation;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: AnimatedBuilder(
-        animation: animation,
-        builder: (context, child) {
-          return SizedBox(
-            height: animation.value,
-            width: animation.value,
-            child: child,
-          );
-        },
-        child: child,
+          // 4. Replace Container with AnimatedContainer
+          Center(
+            child: AnimatedContainer(
+              // The duration controls how long the animation takes
+              duration: const Duration(seconds: 1),
+              // The curve determines the pacing of the animation
+              curve: _currentCurve,
+              margin: const EdgeInsets.symmetric(vertical: 10),
+              height: _size,
+              width: _size,
+              // Adding a background color to make the bounding box easier to see
+              decoration: BoxDecoration(
+                color: Colors.blue.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const FlutterLogo(),
+            ),
+          ),
+        ],
       ),
     );
   }
