@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
 
-class AnimationsDemo extends StatefulWidget {
+class AnimationsDemo extends StatelessWidget {
   const AnimationsDemo({super.key});
 
   @override
-  State<AnimationsDemo> createState() => _AnimationsDemoState();
+  Widget build(BuildContext context) {
+    return Scaffold(appBar: AppBar(), body: LogoWidget());
+  }
 }
 
-class _AnimationsDemoState extends State<AnimationsDemo>
+class TickerWidget extends StatefulWidget {
+  const TickerWidget({super.key});
+
+  @override
+  State<TickerWidget> createState() => _TickerWidgetState();
+}
+
+class _TickerWidgetState extends State<TickerWidget>
     with SingleTickerProviderStateMixin {
   late Animation<double> animation;
   late AnimationController controller;
@@ -43,16 +52,24 @@ class _AnimationsDemoState extends State<AnimationsDemo>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Center(
-        child: Container(
-          margin: const EdgeInsets.symmetric(vertical: 10),
-          height: animation.value,
-          width: animation.value,
-          child: const FlutterLogo(),
-        ),
-      ),
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      height: animation.value,
+      width: animation.value,
+      child: const FlutterLogo(),
+    );
+  }
+}
+
+class LogoWidget extends StatelessWidget {
+  const LogoWidget({super.key});
+
+  // Leave out the height and width so it fills the animating parent.
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: const FlutterLogo(),
     );
   }
 }
