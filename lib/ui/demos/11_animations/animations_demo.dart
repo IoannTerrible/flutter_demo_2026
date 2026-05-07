@@ -19,12 +19,19 @@ class _AnimationsDemoState extends State<AnimationsDemo>
       duration: const Duration(seconds: 2),
       vsync: this,
     );
-    animation = Tween<double>(begin: 0, end: 300).animate(controller)
-      ..addListener(() {
-        setState(() {
-          // The state that has changed here is the animation object's value.
-        });
+    animation = Tween<double>(begin: 0, end: 300).animate(controller);
+    animation.addListener(() {
+      setState(() {
+        // The state that has changed here is the animation object's value.
       });
+    });
+    animation.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        controller.reverse();
+      } else if (status == AnimationStatus.dismissed) {
+        controller.forward();
+      }
+    });
     controller.forward();
   }
 
