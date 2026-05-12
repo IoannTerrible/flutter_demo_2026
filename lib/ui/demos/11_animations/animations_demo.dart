@@ -1,89 +1,136 @@
 import 'package:flutter/material.dart';
 
-class AnimationsDemo extends StatefulWidget {
-  const AnimationsDemo({super.key});
+class AnimationDemo extends StatefulWidget {
+  const AnimationDemo({super.key});
 
   @override
-  State<AnimationsDemo> createState() => _AnimationsDemoState();
+  State<AnimationDemo> createState() => _AnimationDemoState();
 }
 
-class _AnimationsDemoState extends State<AnimationsDemo> {
-  // 1. Define variables for the changing states
-  double _size = 300.0;
-  Curve _currentCurve = Curves.easeInOut;
+class _AnimationDemoState extends State<AnimationDemo>
+    with
+        SingleTickerProviderStateMixin // needed for Explicit transition
+        {
+  // --- Implicit Animation ---
+  bool _isExpanded = false;
 
-  // A map of different curves to test out
-  final Map<String, Curve> _curves = {
-    'Ease In Out': Curves.easeInOut,
-    'Bounce Out': Curves.bounceOut,
-    'Elastic Out': Curves.elasticOut,
-    'Linear': Curves.linear,
-    'Decelerate': Curves.decelerate,
-  };
+  // --- Explicit Animation ---
+  late AnimationController _spinController;
+
+  @override
+  void initState() {
+    super.initState();
+    _spinController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    );
+  }
+
+  @override
+  void dispose() {
+    _spinController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Curves Demo')),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // 2. A Dropdown to switch between different Curves
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text('Select Curve: ', style: TextStyle(fontSize: 18)),
-              DropdownButton<Curve>(
-                value: _currentCurve,
-                items: _curves.entries.map((entry) {
-                  return DropdownMenuItem<Curve>(
-                    value: entry.value,
-                    child: Text(entry.key),
-                  );
-                }).toList(),
-                onChanged: (Curve? newCurve) {
-                  if (newCurve != null) {
-                    setState(() {
-                      _currentCurve = newCurve;
-                    });
-                  }
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-
-          // 3. A button to trigger the size change
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                // Toggle the size between 100 and 300
-                _size = _size == 300.0 ? 100.0 : 300.0;
-              });
-            },
-            child: const Text('Animate Size'),
-          ),
-          const SizedBox(height: 40),
-
-          // 4. Replace Container with AnimatedContainer
-          Center(
-            child: AnimatedContainer(
-              // The duration controls how long the animation takes
-              duration: const Duration(seconds: 1),
-              // The curve determines the pacing of the animation
-              curve: _currentCurve,
-              margin: const EdgeInsets.symmetric(vertical: 10),
-              height: _size,
-              width: _size,
-              // Adding a background color to make the bounding box easier to see
-              decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const FlutterLogo(),
+      appBar: AppBar(
+        title: const Text('Animation Demo'),
+        backgroundColor: Colors.deepPurple,
+        foregroundColor: Colors.white,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // ==========================================
+            // 1. IMPLICIT ANIMATION: AnimatedContainer
+            // ==========================================
+            const Text(
+              'Implicit Animation: AnimatedContainer',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-          ),
-        ],
+            const SizedBox(height: 10),
+            GestureDetector(
+              onTap: () {
+                // We just change a boolean, Flutter handles the smooth transition
+                setState(() {
+                  _isExpanded = !_isExpanded;
+                });
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 600),
+                curve: Curves.easeInOutBack,
+                width: _isExpanded ? 200.0 : 100.0,
+                height: _isExpanded ? 150.0 : 100.0,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: _isExpanded ? Colors.teal : Colors.deepOrange,
+                  borderRadius: BorderRadius.circular(_isExpanded ? 30.0 : 8.0),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 10,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: const Text(
+                  'Tap Me',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+
+            const Divider(height: 50, thickness: 2),
+
+            // ==========================================
+            // 2. EXPLICIT ANIMATION: RotationTransition
+            // ==========================================
+            const Text(
+              'Explicit Animation: RotationTransition',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+
+            // This widget listens directly to the _spinController
+            RotationTransition(
+              turns: _spinController,
+              child: const Icon(
+                Icons.settings,
+                size: 100,
+                color: Colors.blueGrey,
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Because it's explicit, we have full control to start, stop, or reverse it
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () =>
+                      _spinController.repeat(), // Loops indefinitely
+                  icon: const Icon(Icons.play_arrow),
+                  label: const Text('Spin'),
+                ),
+                const SizedBox(width: 16),
+                ElevatedButton.icon(
+                  onPressed: () =>
+                      _spinController.stop(), // Pauses exactly where it is
+                  icon: const Icon(Icons.stop),
+                  label: const Text('Stop'),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
